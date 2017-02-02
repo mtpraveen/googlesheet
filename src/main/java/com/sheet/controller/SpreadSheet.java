@@ -132,52 +132,52 @@ public class SpreadSheet {
     }
     
     private static void getSheetData() throws Exception {
-    	int Id_Col=0;
+    	int lId_Col=0;
         // Build a new authorized API client service.
         Sheets service = getSheetsService();
         // Prints the names  of students in a sample spreadsheet:
         // https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-        String spreadsheetId = "1CZPzCBwp3-SviyvmTvgsIcLotvAzuG_H5rFYzQ3aQFE";
+        String lSpreadsheetId = "1CZPzCBwp3-SviyvmTvgsIcLotvAzuG_H5rFYzQ3aQFE";
         /*String range = "MyTestSheet!A1:AZ2000";*/
-        String range = "Sheet1!A1:AZ2000";
+        String lRange = "Sheet1!A1:AZ2000";
        
-        ValueRange response = service.spreadsheets().values().get(spreadsheetId, range).execute();
-        List<List<Object>> rows = response.getValues();
+        ValueRange response = service.spreadsheets().values().get(lSpreadsheetId, lRange).execute();
+        List<List<Object>> lRows = response.getValues();
     	//System.out.println(rows.size());
-        if ( rows != null && rows.size() > 0 ) {
+        if ( lRows != null && lRows.size() > 0 ) {
         	//getting frst row
-        	List<Object> rowHeader =  rows.get(0);
+        	List<Object> lRowHeader =  lRows.get(0);
         	
-        	for (int rowNo = 1;  rowNo < rows.size(); rowNo++) {
+        	for (int lRowNo = 1;  lRowNo < lRows.size(); lRowNo++) {
         		//System.out.println("----");
         		
         		//it returns particular row
-        		List<Object> row =  rows.get(rowNo);
+        		List<Object> lRow =  lRows.get(lRowNo);
         		/*System.out.println(row.size());*/
-        		int colNo = 0;
+        		
         		Map<String, String> map = new HashMap<String, String>();
         		//it returns column of that particular row
-        		for (colNo = 0; colNo < row.size(); colNo++) {
-        			map.put((String)rowHeader.get(colNo), (String)row.get( colNo ));
+        		for (int lColNo = 0; lColNo < lRow.size(); lColNo++) {
+        			map.put((String)lRowHeader.get(lColNo), (String)lRow.get( lColNo ));
         			/*System.out.println((String)row.get(colNo));*/
         			
         		}
         		
         		mURL=map.get("FaceBookURL");
         		System.out.println(mURL);
-        		mKey=map.get(  rowHeader.get(Id_Col) );
-        		byte[] image = null;
-        		Document doc = Jsoup.connect(mURL).userAgent("Mozilla/5.0").get();
+        		mKey=map.get(  lRowHeader.get(lId_Col) );
+        		byte[] lImage = null;
+        		Document doc = Jsoup.connect(mURL). ignoreHttpErrors(true).userAgent("Mozilla/5.0").timeout(5000).get();
             	
             	// fb profile url fetching
             	
-            	 Element links = doc.getElementsByClass("photoContainer").first();
-            	 Element imgTags = links.getElementsByTag("img").get(0);
-         	     String src = imgTags.attr("src");
+            	 Element lLinks = doc.getElementsByClass("photoContainer").first();
+            	 Element lImgTags = lLinks.getElementsByTag("img").get(0);
+         	     String src = lImgTags.attr("src");
          	    System.out.println(src);
-        		image = IOUtils.toByteArray(new URL(src));
-        		String imageFile = Base64.getEncoder().encodeToString(image);
-        		map.put("image", imageFile);
+        		lImage = IOUtils.toByteArray(new URL(src));
+        		String lImageFile = Base64.getEncoder().encodeToString(lImage);
+        		map.put("image", lImageFile);
         		map.remove("EnggId");
         		SheetDao.saveDataToFireBase( mKey , map );
         		/*Map<String,String> oldValue = SheetDao.fetchData( map.get(rowHeader.get(Id_Col)) );

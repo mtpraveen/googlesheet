@@ -13,39 +13,39 @@ import com.google.firebase.database.ValueEventListener;
 import com.sheet.controller.SpreadSheet;
 
 public class SheetDao {
-	private static FirebaseApp firebaseApp = null;
+	private static FirebaseApp mfirebaseApp = null;
 	
 	//Initialise the firebase database
 	public static FirebaseApp  initializeFireBase(){
-		if( firebaseApp != null)
+		if( mfirebaseApp != null)
 		{
-			return firebaseApp; 
+			return mfirebaseApp; 
 		}
 		FirebaseOptions mOptions=null;
 		try {
 			mOptions = new FirebaseOptions.Builder().setDatabaseUrl("https://sheet-f131b.firebaseio.com/").setServiceAccount(new FileInputStream("/home/bridgeit/sheet-35461dfea2bd.json")).build();
-			firebaseApp = FirebaseApp.initializeApp(mOptions);
+			mfirebaseApp = FirebaseApp.initializeApp(mOptions);
 		}
 		catch (FileNotFoundException e) 
 		{
 			e.printStackTrace();
 		}
-		return firebaseApp;
+		return mfirebaseApp;
 	}
-	public static void saveDataToFireBase(String key, Map<String,String> map)
+	public static void saveDataToFireBase(String pKey, Map<String,String> pMap)
 	
 	{
 		FirebaseApp firebaseApp = initializeFireBase();
 		// As an admin, the app has access to read and write all data, regardless of Security Rules
 		
-		DatabaseReference ref = FirebaseDatabase.getInstance( firebaseApp ).getReference("Engineer");
-		DatabaseReference usersRef = ref.child(key);
-		usersRef.setValue(map);
+		DatabaseReference lRef = FirebaseDatabase.getInstance( firebaseApp ).getReference("Engineer");
+		DatabaseReference lUsersRef = lRef.child(pKey);
+		lUsersRef.setValue(pMap);
 		
-		usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+		lUsersRef.addListenerForSingleValueEvent(new ValueEventListener() {
 		    @Override
-		    public void onDataChange(DataSnapshot dataSnapshot) {
-		        Object document = dataSnapshot.getValue();
+		    public void onDataChange(DataSnapshot pDataSnapshot) {
+		        Object document = pDataSnapshot.getValue();
 		        System.out.println(document);
 		    }
 			@Override
@@ -57,18 +57,18 @@ public class SheetDao {
 		
 	}
 	
-	public static Map<String, String> fetchDataFromFireBase(String key)
+	public static Map<String, String> fetchDataFromFireBase(String pKey)
 	{
 		initializeFireBase();
 		// As an admin, the app has access to read and write all data, regardless of Security Rules
 		DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Engineer");
-		DatabaseReference usersRef = ref.child(key);
+		DatabaseReference usersRef = ref.child(pKey);
 		
 		
 		ValueEventListener postListener = new ValueEventListener() {
 		    @Override
-		    public void onDataChange(DataSnapshot dataSnapshot) {
-		    	for (DataSnapshot child : dataSnapshot.getChildren()) {
+		    public void onDataChange(DataSnapshot pDataSnapshot) {
+		    	for (DataSnapshot child : pDataSnapshot.getChildren()) {
 	                 for (DataSnapshot childd : child.getChildren()) {
 	                	 System.out.println(childd
 	                		);
@@ -76,8 +76,8 @@ public class SheetDao {
 	                }
 		    }
 		    @Override
-		    public void onCancelled(DatabaseError databaseError) {
-		        System.out.println("The read failed: " + databaseError.getCode());
+		    public void onCancelled(DatabaseError pDatabaseError) {
+		        System.out.println("The read failed: " + pDatabaseError.getCode());
 		    }
 		};
 		ref.addValueEventListener(postListener);
